@@ -38,12 +38,19 @@ fn convert_to_component(path: impl AsRef<Path>) -> Result<Vec<u8>> {
 
 fn main() -> Result<()> {
     // Create an engine with the component model enabled (disabled by default).
-    let engine = Engine::new(Config::new().wasm_component_model(true))?;
+    // let engine = Engine::new(Config::new().wasm_component_model(true))?;
+    let mut engine_config = Config::new();
+    engine_config
+        .debug_info(true)
+        .wasm_component_model(true);
+
+    let engine = Engine::new(&engine_config)?;
 
     // NOTE: The wasm32-unknown-unknown target is used here for simplicity, real world use cases
     // should probably use the wasm32-wasip1 target, and enable wasi preview2 within the component
     // model.
-    let component = convert_to_component("target/wasm32-unknown-unknown/debug/guest.wasm")?;
+    // let component = convert_to_component("target/wasm32-unknown-unknown/debug/guest.wasm")?;
+    let component = convert_to_component("target/wasm32-wasip1/debug/guest.wasm")?;
 
     // Create our component and call our generated host function.
     let component = Component::from_binary(&engine, &component)?;
